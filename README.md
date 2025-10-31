@@ -8,13 +8,15 @@ No more writing boring minutes! From now on, just record the meeting and let the
 ### 1. Install dependencies
 
 ```bash
+git clone git@github.com:misobalogh/cant-be-bothered-ai.git
+cd cant-be-bothered-ai
 uv sync
 ```
 
 ### 2. Setup Gemini API Key (for summarization)
 
 1. Get free API key: https://aistudio.google.com/app/apikey
-2. Create `.env` file:
+2. Create `.env` file and add your key:
 
 ```bash
 GEMINI_API_KEY=your_api_key_here
@@ -145,11 +147,12 @@ Audio Input → Whisper STT → [Optional: Gemini AI] → Text/Markdown Output
 - [x] Basic Whisper transcription
 - [x] Gemini AI meeting minutes generation
 - [x] Markdown export
+- [ ] Docker containerization
+- [ ] CI/CD pipeline
 - [ ] Speaker diarization (Pyannote)
 - [ ] Speaker name mapping
 - [ ] Timestamp preservation
 - [ ] Nice CLI interface
-- [ ] Docker containerization
 - [ ] Specific to our use case - output the minutes to our page repository and publish automatically
 
 ---
@@ -169,6 +172,7 @@ uv pip install nvidia-cudnn-cu12
 ```
 If that doesnt work, try installing it manually from:
 https://developer.nvidia.com/cudnn-downloads
+
 Then, add the `bin` folder to your `PATH` environment variable.
 (Probably just ask ChatGPT for help with this one if its your first time xD)
 
@@ -186,4 +190,6 @@ GEMINI_API_KEY=AIza...
 
 ---
 
-**Status:** MVP v3 - Transcription + AI Minutes + Markdown export
+**Status:**
+
+MVP v3 - Transcription + AI Minutes + Markdown export
