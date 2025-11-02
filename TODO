@@ -1,4 +1,3 @@
-- [ ] miesto device: auto detectnut device a ten vypisat v konfiguraci Model: large-v3 | Language: sk | Device: auto
-- [ ] pridat progress bar pri stahovani modelu a pri spracovani suboru - tam ten iterator vyuzit
-- [ ] transkripciu ulozit do suboru .txt vzdy, postupne to tam ukladat, keby sa nieco stane tak nech to nie je precitane nanovo
+- [x] pridat progress bar pri stahovani modelu a pri spracovani suboru - tam ten iterator vyuzit
+- [x] transkripciu ulozit do suboru .txt vzdy, postupne to tam ukladat, keby sa nieco stane tak nech to nie je precitane nanovo
 - [ ] cli moznost nahrat subor s transkripciou a na nom robit sumarizaciu, nech nemusim vzdy transkribovat to iste keby nefungovala gemini api
