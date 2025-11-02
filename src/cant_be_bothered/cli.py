@@ -7,7 +7,12 @@ from rich.markdown import Markdown
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from cant_be_bothered.summarization.gemini_client import GeminiClient
-from cant_be_bothered.transcription.transcriber import transcribe_audio
+
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="ctranslate2")
+
+from cant_be_bothered.transcription.transcriber import transcribe_audio  # noqa: E402
+
 
 app = typer.Typer(
     name="transcribe",
@@ -147,7 +152,7 @@ def main(
 
             except ValueError as e:
                 fail(f"{e}\n\nSet GEMINI_API_KEY in .env file or environment variable.")
-                fail("Get your free API key at: https://aistudio.google.com/api-keys")
+                console.print("Get your free API key at: https://aistudio.google.com/api-keys")
                 raise typer.Exit(code=1)
             except Exception as e:
                 fail(f"Gemini API error: {e}")
