@@ -162,8 +162,7 @@ Audio Input → Whisper STT → [Optional: Gemini AI] → Text/Markdown Output
 - [x] Basic Whisper transcription
 - [x] Gemini AI meeting minutes generation
 - [x] Markdown export
-- [ ] Docker containerization
-- [ ] CI/CD pipeline
+- [x] Docker containerization
 - [ ] Speaker diarization (Pyannote)
 - [ ] Speaker name mapping
 - [ ] Timestamp preservation

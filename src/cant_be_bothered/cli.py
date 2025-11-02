@@ -82,21 +82,13 @@ def main(
     )
 
     try:
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console,
-        ) as progress:
-            task = progress.add_task("Transcribing audio...", total=None)
-
-            transcript = transcribe_audio(
-                audio_path=audio_file,
-                model_size=model,
-                language=language,
-                device=device,
-            )
-
-            progress.update(task, description="Transcription complete!")
+        # Transcribe audio (progress bar is handled inside transcribe_audio)
+        transcript = transcribe_audio(
+            audio_path=audio_file,
+            model_size=model,
+            language=language,
+            device=device,
+        )
 
         if output is None:
             # Default output directory
@@ -112,7 +104,6 @@ def main(
         # Save raw transcript
         if not summarize:
             output.write_text(transcript, encoding="utf-8")
-            success(f"Saved to: {output}")
             console.print(f"[dim]Saved to: {output}[/dim]\n")
             console.print("[bold]Transcript:[/bold]")
             console.print(f"[cyan]{transcript}[/cyan]")
