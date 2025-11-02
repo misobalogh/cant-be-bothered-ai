@@ -136,7 +136,7 @@ Audio Input → Whisper STT → [Optional: Gemini AI] → Text/Markdown Output
               │
     ┌─────────▼─────────────────────┐
     │  Output Formatter             │
-    │  (markdown/docx export)       │
+    │  (markdown export)            │
     └───────────────────────────────┘
 ```
 

@@ -7,7 +7,7 @@ from rich.markdown import Markdown
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from cant_be_bothered.summarization.gemini_client import GeminiClient
-from cant_be_bothered.transcribtion.transcriber import transcribe_audio
+from cant_be_bothered.transcription.transcriber import transcribe_audio
 
 app = typer.Typer(
     name="transcribe",
