@@ -156,28 +156,22 @@ def main(
                     "[dim]Audio already in WAV format, skipping conversion[/dim]"
                 )
 
-            progress.update(task, description="Audio file ready.")
+            progress.remove_task(task)
+            console.print(":white_check_mark: [green]Audio file ready![/green]")
+
 
         console.print(f"[bold blue]Transcribing:[/bold blue] {working_file.name}")
         console.print(
             f"[dim]Model: {model} | Language: {language} | Device: {device}[/dim] \n"
         )
 
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console,
-        ) as progress:
-            task = progress.add_task("Transcribing audio...", total=None)
-
-            transcript = transcribe_audio(
-                audio_path=working_file,
-                model_size=model,
-                language=language,
-                device=device,
-            )
-
-            progress.update(task, description="Transcription complete!")
+        # Transcribe audio (progress bar is handled inside transcribe_audio)
+        transcript = transcribe_audio(
+            audio_path=working_file,
+            model_size=model,
+            language=language,
+            device=device,
+        )
 
         if output is None:
             # Default output directory
