@@ -42,7 +42,7 @@ def main(
         file_okay=True,
         dir_okay=False,
         readable=True,
-        help="Path to audio file (mp3, wav, m4a, etc.)",
+        help="Path to audio file (mp3, wav, aac, m4a, etc.)",
     ),
     cut_start: Optional[str] = typer.Option(
         None,
@@ -93,6 +93,21 @@ def main(
         False,
         "--simple",
         help="Generate simple bullet-point summary (instead of full minutes)",
+    ),
+    enable_diarization: bool = typer.Option(
+        False,
+        "--diarize",
+        help="Enable speaker diarization",
+    ),
+    min_speakers: Optional[int] = typer.Option(
+        None,
+        "--min-speakers",
+        help="Minimum number of speakers for diarization",
+    ),
+    max_speakers: Optional[int] = typer.Option(
+        None,
+        "--max-speakers",
+        help="Maximum number of speakers for diarization",
     ),
 ) -> None:
     console.print("[bold green]Cant Be Bothered AI - Transcription CLI[/bold green]\n")
@@ -171,6 +186,9 @@ def main(
             model_size=model,
             language=language,
             device=device,
+            enable_diarization=enable_diarization,
+            min_speakers=min_speakers,
+            max_speakers=max_speakers,
         )
 
         if output is None:
