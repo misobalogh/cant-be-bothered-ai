@@ -1,12 +1,16 @@
 from pathlib import Path
 from typing import Optional
 
+import tempfile
+
 import typer
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from cant_be_bothered.summarization.gemini_client import GeminiClient
+from cant_be_bothered.audio.convert import convert_to_wav
+from cant_be_bothered.audio.cut import cut_audio_segment
 
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="ctranslate2")
@@ -38,7 +42,22 @@ def main(
         file_okay=True,
         dir_okay=False,
         readable=True,
-        help="Path to audio file (mp3, wav, m4a, etc.)",
+        help="Path to audio file (mp3, wav, aac, m4a, etc.)",
+    ),
+    cut_start: Optional[str] = typer.Option(
+        None,
+        "--start",
+        help="Start time to cut audio (format: hh:mm:ss|mm:ss|ss)",
+    ),
+    cut_end: Optional[str] = typer.Option(
+        None,
+        "--end",
+        help="End time to cut audio (format: hh:mm:ss|mm:ss|ss)",
+    ),
+    no_cleanup: bool = typer.Option(
+        False,
+        "--no-cleanup",
+        help="Do not delete temporary files after processing (default: cleanup enabled)",
     ),
     output: Optional[Path] = typer.Option(
         None,
@@ -75,19 +94,101 @@ def main(
         "--simple",
         help="Generate simple bullet-point summary (instead of full minutes)",
     ),
+    enable_diarization: bool = typer.Option(
+        False,
+        "--diarize",
+        help="Enable speaker diarization",
+    ),
+    min_speakers: Optional[int] = typer.Option(
+        None,
+        "--min-speakers",
+        help="Minimum number of speakers for diarization",
+    ),
+    max_speakers: Optional[int] = typer.Option(
+        None,
+        "--max-speakers",
+        help="Maximum number of speakers for diarization",
+    ),
 ) -> None:
-    console.print(f"[bold blue]Transcribing:[/bold blue] {audio_file.name}")
-    console.print(
-        f"[dim]Model: {model} | Language: {language} | Device: {device}[/dim] \n"
-    )
+    console.print("[bold green]Cant Be Bothered AI - Transcription CLI[/bold green]\n")
+    console.print(f"[dim]Input file: {audio_file}[/dim]")
 
+    tmp_context = None
     try:
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console,
+        ) as progress:
+            task = progress.add_task("Preparing audio file...", total=None)
+
+            #######################################################
+            # Setup temporary working directory
+            #######################################################
+            if no_cleanup:
+                work_dir = Path(tempfile.mkdtemp(prefix="cbb_"))
+                console.print(f"[dim]Temporary files are stored in: {work_dir}[/dim]")
+            else:
+                tmp_context = tempfile.TemporaryDirectory(prefix="cbb_")
+                work_dir = Path(tmp_context.name)
+
+            working_file = Path(audio_file)
+
+            #######################################################
+            # Cut audio segment if specified
+            #######################################################
+            if cut_start or cut_end:
+                console.print(
+                    f"[dim]Cutting audio segment: start={cut_start or '0:00'} end={cut_end or 'end'}[/dim]"
+                )
+
+                out_cut = work_dir / f"cut_{working_file.stem}.wav"
+
+                cut_audio_segment(
+                    input_path=audio_file,
+                    output_path=out_cut,
+                    start=cut_start,
+                    end=cut_end,
+                )
+                working_file = out_cut
+
+            #######################################################
+            # Convert to WAV
+            #######################################################
+            if working_file.suffix.lower() != ".wav":
+                console.print("[dim]Converting to WAV format...[/dim]")
+
+                out_wav = work_dir / f"{working_file.stem}.wav"
+
+                convert_to_wav(
+                    input_path=working_file,
+                    output_path=out_wav,
+                )
+
+                working_file = out_wav
+            else:
+                console.print(
+                    "[dim]Audio already in WAV format, skipping conversion[/dim]"
+                )
+
+            progress.remove_task(task)
+            console.print(":white_check_mark: [green]Audio file ready![/green]")
+
+
+        console.print(f"[bold blue]Transcribing:[/bold blue] {working_file.name}")
+        console.print(
+            f"[dim]Model: {model} | Language: {language} | Device: {device}[/dim] \n"
+        )
+
         # Transcribe audio (progress bar is handled inside transcribe_audio)
         transcript = transcribe_audio(
-            audio_path=audio_file,
+            audio_path=working_file,
             model_size=model,
             language=language,
             device=device,
+            enable_diarization=enable_diarization,
+            min_speakers=min_speakers,
+            max_speakers=max_speakers,
         )
 
         if output is None:
@@ -152,6 +253,10 @@ def main(
     except Exception as e:
         fail(str(e))
         raise typer.Exit(code=1)
+
+    finally:
+        if tmp_context is not None:
+            tmp_context.cleanup()
 
 
 if __name__ == "__main__":
