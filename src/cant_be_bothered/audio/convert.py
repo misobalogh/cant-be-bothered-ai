@@ -10,7 +10,6 @@ def convert_to_wav(
     output_path: Optional[Union[str, Path]] = None,
     sample_rate: Optional[int] = None,
     mono: bool = True,
-    force: bool = False,
 ) -> Path:
     """
     Convert an audio file to WAV using torchaudio. Returns the Path to the WAV file.
@@ -33,9 +32,6 @@ def convert_to_wav(
         raise FileNotFoundError(f"Input not found: {inp}")
 
     out = Path(output_path) if output_path is not None else inp.with_suffix(".wav")
-
-    if inp.suffix.lower() == ".wav" and not force:
-        return inp
 
     waveform, sr = torchaudio.load(str(inp))  # channels_first: (channels, samples)
 

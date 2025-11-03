@@ -10,9 +10,9 @@ def get_range_output_path(input_path: Path, start_sec: float, end_sec: float) ->
     )
 
 
-def cut_audio(
+def cut_audio_segment(
     input_path: Union[str, Path],
-    start: str,
+    start: Optional[str] = None,
     end: Optional[str] = None,
     output_path: Optional[Union[str, Path]] = None,
 ) -> Path:
@@ -36,7 +36,7 @@ def cut_audio(
 
     duration_sec = waveform.shape[1] / sr
 
-    start_sec = parse_time_str(start)
+    start_sec = 0 if start is None else parse_time_str(start)
 
     end_sec = duration_sec if end is None else parse_time_str(end)
 
