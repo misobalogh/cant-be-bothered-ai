@@ -37,37 +37,52 @@ uv run transcribe meeting.mp3 --summarize --simple
 
 ---
 
+## Docker Usage
+
+Alternatively, you can use Docker to run the application without installing dependencies locally.
+#### Build Docker image
+
+```bash
+docker build -t cant-be-bothered -f Dockerfile .
+```
+
+#### Run transcription inside Docker container
+
+```bash
+docker run --rm -it --gpus all cant-be-bothered audio_samples/audio1.aac --device cuda --summarize
+```
+
 ## Usage
 
-### Basic transcription (no AI)
+#### Basic transcription (no AI)
 
 ```bash
 uv run transcribe meeting.wav
 # Output: output/meeting.txt (raw transcript)
 ```
 
-### Generate meeting minutes with Gemini
+#### Generate meeting minutes with Gemini
 
 ```bash
 uv run transcribe meeting.mp3 --summarize
 # Output: output/meeting.md (formatted minutes)
 ```
 
-### Simple summary
+#### Simple summary
 
 ```bash
 uv run transcribe meeting.mp3 -s --simple
 # Output: output/meeting.md (bullet points)
 ```
 
-### Custom output file
+#### Custom output file
 
 ```bash
 uv run transcribe meeting.mp3 -o my_notes.txt
 uv run transcribe meeting.mp3 --summarize -o minutes.md
 ```
 
-### Use different Whisper model
+#### Use different Whisper model
 
 ```bash
 # Faster but less accurate
@@ -77,7 +92,7 @@ uv run transcribe audio.mp3 -m base
 uv run transcribe audio.mp3 -m large-v3 --summarize
 ```
 
-### Available Whisper models:
+#### Available Whisper models:
 - `tiny`
 - `base`
 - `small`
@@ -147,8 +162,7 @@ Audio Input → Whisper STT → [Optional: Gemini AI] → Text/Markdown Output
 - [x] Basic Whisper transcription
 - [x] Gemini AI meeting minutes generation
 - [x] Markdown export
-- [ ] Docker containerization
-- [ ] CI/CD pipeline
+- [x] Docker containerization
 - [ ] Speaker diarization (Pyannote)
 - [ ] Speaker name mapping
 - [ ] Timestamp preservation
